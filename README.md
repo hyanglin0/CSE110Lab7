@@ -2,5 +2,9 @@
 
 2) No.
 
+3) Navigation mode analyzes a page right after it loads, while snapshot mode analyzes a page in its current state.
 
-
+4) Three things we can do to improve the CSE 110 shop site:
+- Avoid chaining critical requests.
+- Add a `[lang]` attribute to the `<html>` element.
+- Add a meta description to the document.
