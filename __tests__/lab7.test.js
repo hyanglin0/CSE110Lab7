@@ -94,20 +94,18 @@ describe('Basic user flow for Website', () => {
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
 
-    const prodItems = await page.$$("product-item");
-    for (const prodItem of prodItems) {
-      const shadowRoot = await prodItem.getProperty("shadowRoot");
-      const button = await shadowRoot.$("button");
-      const innerText = await button.getProperty("innerText");
-      const jsonValue = await innerText.jsonValue();
-      if (jsonValue === "Add to Cart") {
-        await button.click();
-      }
-    }
-    const cartCount = await page.$("#cart-count");
-    const innerText = await cartCount.getProperty("innerText");
-    const jsonValue = await innerText.jsonValue();
-    expect(jsonValue).toBe("20");
+    await page.$$eval("product-item", prodItems => {
+      prodItems.forEach(prodItem => {
+        const button = prodItem.shadowRoot.querySelector("button");
+        if (button.innerText === "Add to Cart") {
+          button.click();
+        }
+      })
+    });
+    const cartCount = await page.$eval("#cart-count", element => {
+      return element.innerText;
+    });
+    expect(cartCount).toBe("20");
 
   }, 10000);
 
@@ -125,21 +123,18 @@ describe('Basic user flow for Website', () => {
     
     let allInCart = true;
     await page.reload();
-    const prodItems = await page.$$("product-item");
-    for (const prodItem of prodItems) {
-      const shadowRoot = await prodItem.getProperty("shadowRoot");
-      const button = await shadowRoot.$("button");
-      const innerText = await button.getProperty("innerText");
-      const jsonValue = await innerText.jsonValue();
-      if (jsonValue !== "Remove from Cart") {
-        allInCart = false;
-      }
-    }
+    await page.$$eval("product-item", prodItems => {
+      prodItems.forEach(prodItem => {
+        if (prodItem.shadowRoot.querySelector("button").innerText !== "Remove from Cart") {
+          allInCart = false;
+        }
+      })
+    });
     expect(allInCart).toBe(true);
-    const cartCount = await page.$("#cart-count");
-    const innerText = await cartCount.getProperty("innerText");
-    const jsonValue = await innerText.jsonValue();
-    expect(jsonValue).toBe("20");
+    const cartCount = await page.$eval("#cart-count", element => {
+      return element.innerText;
+    });
+    expect(cartCount).toBe("20");
 
   }, 10000);
 
@@ -153,7 +148,7 @@ describe('Basic user flow for Website', () => {
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
 
-    const cart = page.evaluate(() => {
+    const cart = await page.evaluate(() => {
       return localStorage.getItem("cart");
     });
     expect(cart).toBe("[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]");
@@ -172,20 +167,18 @@ describe('Basic user flow for Website', () => {
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
 
-    const prodItems = await page.$$("product-item");
-    for (const prodItem of prodItems) {
-      const shadowRoot = await prodItem.getProperty("shadowRoot");
-      const button = await shadowRoot.$("button");
-      const innerText = await button.getProperty("innerText");
-      const jsonValue = await innerText.jsonValue();
-      if (jsonValue === "Remove from Cart") {
-        await button.click();
-      }
-    }
-    const cartCount = await page.$("#cart-count");
-    const innerText = await cartCount.getProperty("innerText");
-    const jsonValue = await innerText.jsonValue();
-    expect(jsonValue).toBe("0");
+    await page.$$eval("product-item", prodItems => {
+      prodItems.forEach(prodItem => {
+        const button = prodItem.shadowRoot.querySelector("button");
+        if (button.innerText === "Remove from Cart") {
+          button.click();
+        }
+      })
+    });
+    const cartCount = await page.$eval("#cart-count", element => {
+      return element.innerText;
+    });
+    expect(cartCount).toBe("0");
 
   }, 10000);
 
@@ -204,21 +197,18 @@ describe('Basic user flow for Website', () => {
 
     let cartEmpty = true;
     await page.reload();
-    const prodItems = await page.$$("product-item");
-    for (const prodItem of prodItems) {
-      const shadowRoot = await prodItem.getProperty("shadowRoot");
-      const button = await shadowRoot.$("button");
-      const innerText = await button.getProperty("innerText");
-      const jsonValue = await innerText.jsonValue();
-      if (jsonValue !== "Add to Cart") {
-        cartEmpty = false;
-      }
-    }
+    await page.$$eval("product-item", prodItems => {
+      prodItems.forEach(prodItem => {
+        if (prodItem.shadowRoot.querySelector("button").innerText !== "Add to Cart") {
+          cartEmpty = false;
+        }
+      })
+    });
     expect(cartEmpty).toBe(true);
-    const cartCount = await page.$("#cart-count");
-    const innerText = await cartCount.getProperty("innerText");
-    const jsonValue = await innerText.jsonValue();
-    expect(jsonValue).toBe("0");
+    const cartCount = await page.$eval("#cart-count", element => {
+      return element.innerText;
+    });
+    expect(cartCount).toBe("0");
 
   }, 10000);
 
@@ -233,7 +223,7 @@ describe('Basic user flow for Website', () => {
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
 
-    const cart = page.evaluate(() => {
+    const cart = await page.evaluate(() => {
       return localStorage.getItem("cart");
     });
     expect(cart).toBe("[]");
